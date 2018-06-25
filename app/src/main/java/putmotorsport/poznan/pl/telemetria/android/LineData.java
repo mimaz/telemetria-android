@@ -13,6 +13,7 @@ import java.util.Iterator;
 class LineData {
     private static final String COUNT_KEY = "count";
     private static final String VALUES_KEY = "values";
+    private static final int MAX_COUNT = 500;
 
     private String name;
     private LineGraphSeries<DataPoint> series;
@@ -55,24 +56,17 @@ class LineData {
     }
 
     void restoreSeries(Bundle bundle) {
-        count = bundle.getInt(COUNT_KEY);
         ArrayList<Integer> values = bundle.getIntegerArrayList(VALUES_KEY);
+        count = bundle.getInt(COUNT_KEY) - values.size();
 
-        int idx = count - values.size();
-
-        for (int val : values) {
-            DataPoint point = new DataPoint(idx++, val);
-
-            series.appendData(point, true, 100);
-        }
-
-        Log.d("TAG", "restore: " + count);
+        for (int val : values)
+            addValue(val);
     }
 
     void addValue(int value) {
         DataPoint point = new DataPoint(count++, value);
 
-        series.appendData(point, true, 100);
+        series.appendData(point, true, MAX_COUNT);
     }
 
     LineGraphSeries<DataPoint> getSeries() {

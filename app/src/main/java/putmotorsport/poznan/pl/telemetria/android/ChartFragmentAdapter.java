@@ -83,6 +83,13 @@ class ChartFragmentAdapter extends FragmentStatePagerAdapter {
                         new LineDescription(
                                 23, "prawy przód", Color.GREEN
                         )
+                ),
+                new ChartDescription(
+                        "położenie kierownicy",
+                        -100, 100,
+                        new LineDescription(
+                                30, "kąt skrętu", Color.WHITE
+                        )
                 )
         };
     }

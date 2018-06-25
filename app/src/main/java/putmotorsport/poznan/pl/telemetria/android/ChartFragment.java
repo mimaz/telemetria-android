@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
+import com.jjoe64.graphview.LegendRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +60,14 @@ public class ChartFragment extends Fragment {
         ChartDescription desc = new ChartDescription(args);
 
         chart.setTitle(desc.title);
+
+        LegendRenderer lr = chart.getLegendRenderer();
+        lr.setVisible(true);
+        lr.setFixedPosition(0, 0);
+
+        GridLabelRenderer glr = chart.getGridLabelRenderer();
+        glr.setHorizontalLabelsVisible(false);
+        glr.setVerticalLabelsVisible(true);
 
         chart.getViewport().setXAxisBoundsManual(true);
         chart.getViewport().setMinX(0);
