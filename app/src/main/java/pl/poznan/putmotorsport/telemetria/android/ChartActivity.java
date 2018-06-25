@@ -1,4 +1,4 @@
-package putmotorsport.poznan.pl.telemetria.android;
+package pl.poznan.putmotorsport.telemetria.android;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import java.io.IOException;
+
+import putmotorsport.poznan.pl.telemetria.android.R;
 
 public class ChartActivity extends AppCompatActivity {
     private ViewPager pager;
@@ -20,7 +22,7 @@ public class ChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FragmentManager fm = getSupportFragmentManager();
-        ChartFragmentAdapter adapter = new ChartFragmentAdapter(fm);
+        ChartAdapter adapter = new ChartAdapter(fm);
 
         pager = findViewById(R.id.pager);
         pager.setAdapter(adapter);

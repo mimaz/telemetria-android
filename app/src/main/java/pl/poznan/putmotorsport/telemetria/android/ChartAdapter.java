@@ -1,20 +1,19 @@
-package putmotorsport.poznan.pl.telemetria.android;
+package pl.poznan.putmotorsport.telemetria.android;
 
 import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-class ChartFragmentAdapter extends FragmentStatePagerAdapter {
+class ChartAdapter extends FragmentStatePagerAdapter {
     private static final ChartDescription[] descriptions;
 
     private final Map<Integer, ChartFragment> fragmentMap;
 
-    ChartFragmentAdapter(FragmentManager fm) {
+    ChartAdapter(FragmentManager fm) {
         super(fm);
 
         fragmentMap = new TreeMap<>();

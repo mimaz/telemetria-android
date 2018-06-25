@@ -1,4 +1,4 @@
-package putmotorsport.poznan.pl.telemetria.android;
+package pl.poznan.putmotorsport.telemetria.android;
 
 class LineDescription {
     final int id;

@@ -1,8 +1,7 @@
-package putmotorsport.poznan.pl.telemetria.android;
+package pl.poznan.putmotorsport.telemetria.android;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;

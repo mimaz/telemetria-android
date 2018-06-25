@@ -1,4 +1,4 @@
-package putmotorsport.poznan.pl.telemetria.android;
+package pl.poznan.putmotorsport.telemetria.android;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 
+@Deprecated
 class FakeTcpClient implements AbstractTcpClient {
     private final Random random;
     private final Map<Integer, State> stateMap;

@@ -1,4 +1,4 @@
-package putmotorsport.poznan.pl.telemetria.android;
+package pl.poznan.putmotorsport.telemetria.android;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +16,8 @@ import com.jjoe64.graphview.LegendRenderer;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import putmotorsport.poznan.pl.telemetria.android.R;
 
 public class ChartFragment extends Fragment {
     private static final int UPDATE_INTERVAL = 200;
