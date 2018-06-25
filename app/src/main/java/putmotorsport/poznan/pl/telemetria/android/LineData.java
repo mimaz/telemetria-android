@@ -24,7 +24,7 @@ class LineData {
         series = new LineGraphSeries<>();
         count = 0;
 
-        series.setAnimated(true);
+        series.setAnimated(false);
         series.setDrawBackground(true);
         series.setDrawAsPath(true);
         series.setThickness(5);

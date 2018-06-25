@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class ChartFragment extends Fragment {
+    private static final int UPDATE_INTERVAL = 200;
+
     private final Map<Integer, LineData> dataMap;
     private final Handler handler;
     private final List<Runnable> runnables;
@@ -135,7 +137,7 @@ public class ChartFragment extends Fragment {
                         dataMap.get(id).addValue(value);
                 }
 
-                handler.postDelayed(this, 100);
+                handler.postDelayed(this, UPDATE_INTERVAL);
             }
         });
 
