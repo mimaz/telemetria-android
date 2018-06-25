@@ -13,7 +13,6 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.LegendRenderer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,8 +22,7 @@ public class ChartFragment extends Fragment {
 
     private final Map<Integer, LineData> dataMap;
     private final Handler handler;
-    private final List<Runnable> runnables;
-    private GraphView chart;
+    private final Runnable updater;
 
     public static ChartFragment newInstance(ChartDescription desc) {
         ChartFragment fragment = new ChartFragment();
@@ -37,7 +35,21 @@ public class ChartFragment extends Fragment {
     public ChartFragment() {
         dataMap = new TreeMap<>();
         handler = new Handler();
-        runnables = new ArrayList<>();
+        updater = new Runnable() {
+            @Override
+            public void run() {
+                AbstractTcpClient client = getChartActivity().getTcpClient();
+
+                for (int id : dataMap.keySet()) {
+                    List<Integer> newData = client.getNewData(id);
+
+                    for (int value : newData)
+                        dataMap.get(id).addValue(value);
+                }
+
+                handler.postDelayed(this, UPDATE_INTERVAL);
+            }
+        };
     }
 
     @Nullable
@@ -53,7 +65,7 @@ public class ChartFragment extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        chart = view.findViewById(R.id.chart);
+        GraphView chart = view.findViewById(R.id.chart);
 
         Bundle args = getArguments();
 
@@ -70,6 +82,8 @@ public class ChartFragment extends Fragment {
         GridLabelRenderer glr = chart.getGridLabelRenderer();
         glr.setHorizontalLabelsVisible(false);
         glr.setVerticalLabelsVisible(true);
+
+        chart.setCursorMode(true);
 
         chart.getViewport().setXAxisBoundsManual(true);
         chart.getViewport().setMinX(0);
@@ -125,37 +139,18 @@ public class ChartFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        runnables.add(new Runnable() {
-            @Override
-            public void run() {
-                AbstractTcpClient client = getChartApplication().getTcpClient();
-
-                for (int id : dataMap.keySet()) {
-                    List<Integer> newData = client.getNewData(id);
-
-                    for (int value : newData)
-                        dataMap.get(id).addValue(value);
-                }
-
-                handler.postDelayed(this, UPDATE_INTERVAL);
-            }
-        });
-
-
-        for (Runnable runnable : runnables)
-            handler.post(runnable);
+        handler.post(updater);
     }
 
     @Override
     public void onStop() {
-        for (Runnable runnable : runnables)
-            handler.removeCallbacks(runnable);
+        handler.removeCallbacks(updater);
 
         super.onStop();
     }
 
-    private ChartApplication getChartApplication() {
-        return (ChartApplication) getContext().getApplicationContext();
+    private ChartActivity getChartActivity() {
+        return (ChartActivity) getActivity();
     }
 
     private String lineKey(int id) {

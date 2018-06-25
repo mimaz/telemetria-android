@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -40,16 +41,16 @@ class ChartFragmentAdapter extends FragmentStatePagerAdapter {
                         "prędkość km/h",
                         0, 150,
                         new LineDescription(
-                                10, "lewe tył", Color.RED
+                                90, "lewe tył", Color.RED
                         ),
                         new LineDescription(
-                                11, "prawe tył", Color.YELLOW
+                                91, "prawe tył", Color.YELLOW
                         ),
                         new LineDescription(
-                                12, "lewe przód", Color.BLUE
+                                92, "lewe przód", Color.BLUE
                         ),
                         new LineDescription(
-                                13, "prawe przód", Color.GREEN
+                                93, "prawe przód", Color.GREEN
                         )
                 ),
                 new ChartDescription(
@@ -66,6 +67,20 @@ class ChartFragmentAdapter extends FragmentStatePagerAdapter {
                         ),
                         new LineDescription(
                                 23, "prawe przód", Color.GREEN
+                        )
+                ),
+                new ChartDescription(
+                        "TPS",
+                        0, 100,
+                        new LineDescription(
+                                41, "wartość %", Color.WHITE
+                        )
+                ),
+                new ChartDescription(
+                        "random",
+                        0, 50,
+                        new LineDescription(
+                                0, "wartość", Color.WHITE
                         )
                 ),
                 new ChartDescription(
