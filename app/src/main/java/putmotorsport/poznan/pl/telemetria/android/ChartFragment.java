@@ -1,6 +1,5 @@
 package putmotorsport.poznan.pl.telemetria.android;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -11,9 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.helper.GraphViewXML;
-import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +71,42 @@ public class ChartFragment extends Fragment {
             LineData data = new LineData(line);
 
             dataMap.put(line.id, data);
+            chart.addSeries(data.getSeries());
         }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            for (int id : dataMap.keySet()) {
+                LineData data = dataMap.get(id);
+
+                String key = lineKey(id);
+
+                if (savedInstanceState.containsKey(key)) {
+                    Bundle bundle = savedInstanceState.getBundle(key);
+                    data.restoreSeries(bundle);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        for (int id : dataMap.keySet()) {
+            LineData data = dataMap.get(id);
+            Bundle bundle = new Bundle();
+
+            data.saveSeries(bundle);
+
+            String key = lineKey(id);
+
+            outState.putBundle(key, bundle);
+        }
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -100,7 +131,7 @@ public class ChartFragment extends Fragment {
 
 
         for (Runnable runnable : runnables)
-            handler.postDelayed(runnable, 1000);
+            handler.post(runnable);
     }
 
     @Override
@@ -115,38 +146,7 @@ public class ChartFragment extends Fragment {
         return (ChartApplication) getContext().getApplicationContext();
     }
 
-    private class LineData {
-        private String name;
-        private LineGraphSeries<DataPoint> series;
-        private int count;
-
-        LineData(LineDescription desc) {
-            name = desc.name;
-            series = new LineGraphSeries<>();
-            count = 0;
-
-            chart.addSeries(series);
-
-            series.setAnimated(true);
-            series.setDrawBackground(true);
-            series.setDrawAsPath(true);
-            series.setThickness(5);
-
-            int red = Color.red(desc.color);
-            int green = Color.green(desc.color);
-            int blue = Color.blue(desc.color);
-
-            int primary = Color.argb(255, red, green, blue);
-            int secondary = Color.argb(50, red, green, blue);
-
-            series.setColor(primary);
-            series.setBackgroundColor(secondary);
-        }
-
-        void addValue(int value) {
-            DataPoint point = new DataPoint(count++, value);
-
-            series.appendData(point, true, 100);
-        }
+    private String lineKey(int id) {
+        return "line_" + id;
     }
 }

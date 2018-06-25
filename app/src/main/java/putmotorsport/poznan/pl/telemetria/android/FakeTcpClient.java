@@ -29,7 +29,7 @@ class FakeTcpClient implements AbstractTcpClient {
         private float accel;
 
         State() {
-            value = 10;
+            value = 100;
             speed = 0;
             accel = 0;
         }
@@ -37,7 +37,7 @@ class FakeTcpClient implements AbstractTcpClient {
         List<Integer> newData() {
             List<Integer> list = new ArrayList<>();
 
-            accel += (random.nextFloat() - 0.5f) * 2f;
+            accel += (random.nextFloat() - 0.5f) * 50f;
             speed += accel;
             value += speed;
 

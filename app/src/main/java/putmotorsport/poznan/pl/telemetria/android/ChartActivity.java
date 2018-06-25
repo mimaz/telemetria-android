@@ -14,7 +14,7 @@ public class ChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         FragmentManager fm = getSupportFragmentManager();
-        FragmentAdapter adapter = new FragmentAdapter(fm);
+        ChartFragmentAdapter adapter = new ChartFragmentAdapter(fm);
 
         pager = findViewById(R.id.pager);
         pager.setAdapter(adapter);
