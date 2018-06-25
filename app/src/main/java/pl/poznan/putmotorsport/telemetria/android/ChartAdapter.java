@@ -45,14 +45,14 @@ class ChartAdapter extends FragmentStatePagerAdapter {
                         new LineDescription(
                                 91, "prawe tył", Color.YELLOW
                         ),
-                        new LineDescription(
+                        new LineDescription(//todo
                                 92, "lewe przód", Color.BLUE
                         ),
-                        new LineDescription(
+                        new LineDescription(//todo
                                 93, "prawe przód", Color.GREEN
                         )
                 ),
-                new ChartDescription(
+                new ChartDescription(//todo
                         "prędkość Hz",
                         0, 500,
                         new LineDescription(
