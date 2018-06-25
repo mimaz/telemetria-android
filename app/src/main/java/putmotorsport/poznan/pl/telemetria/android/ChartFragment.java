@@ -1,38 +1,43 @@
 package putmotorsport.poznan.pl.telemetria.android;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.GraphViewXML;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.function.Consumer;
 
 public class ChartFragment extends Fragment {
-    private static final String ID_ARRAY_KEY = "id_array";
+    private final Map<Integer, LineData> dataMap;
+    private final Handler handler;
+    private final List<Runnable> runnables;
+    private GraphView chart;
 
-    private GraphView graph;
-    private int[] idlist;
-    private Map<Integer, ChartData> datamap;
-
-    public static ChartFragment newInstance(int[] ids) {
+    public static ChartFragment newInstance(ChartDescription desc) {
         ChartFragment fragment = new ChartFragment();
 
-        Bundle bundle = new Bundle();
-        bundle.putIntArray(ID_ARRAY_KEY, ids);
-
-        fragment.setArguments(bundle);
+        fragment.setArguments(desc.toBundle());
 
         return fragment;
+    }
+
+    public ChartFragment() {
+        dataMap = new TreeMap<>();
+        handler = new Handler();
+        runnables = new ArrayList<>();
     }
 
     @Nullable
@@ -48,49 +53,100 @@ public class ChartFragment extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        graph = view.findViewById(R.id.graph);
-        idlist = getArguments().getIntArray(ID_ARRAY_KEY);
-        datamap = new TreeMap<>();
-    }
+        chart = view.findViewById(R.id.chart);
 
-    public void update() {
-        MainActivity activity = (MainActivity) getActivity();
-        TcpClient client = activity.getTcpClient();
+        Bundle args = getArguments();
 
-        for (int id : idlist) {
-            if (!datamap.containsKey(id))
-                datamap.put(id, new ChartData());
+        assert args != null;
 
-            datamap.get(id).update(client, id);
+        ChartDescription desc = new ChartDescription(args);
+
+        chart.setTitle(desc.title);
+
+        chart.getViewport().setXAxisBoundsManual(true);
+        chart.getViewport().setMinX(0);
+        chart.getViewport().setMaxX(40);
+
+        chart.getViewport().setYAxisBoundsManual(true);
+        chart.getViewport().setMinY(desc.min);
+        chart.getViewport().setMaxY(desc.max);
+
+        for (LineDescription line : desc.lines) {
+            LineData data = new LineData(line);
+
+            dataMap.put(line.id, data);
         }
     }
 
-    private class ChartData {
-        LineGraphSeries<DataPoint> series;
-        int since;
-        int count;
+    @Override
+    public void onStart() {
+        super.onStart();
 
-        ChartData() {
+        runnables.add(new Runnable() {
+            @Override
+            public void run() {
+                AbstractTcpClient client = getChartApplication().getTcpClient();
+
+                for (int id : dataMap.keySet()) {
+                    List<Integer> newData = client.getNewData(id);
+
+                    for (int value : newData)
+                        dataMap.get(id).addValue(value);
+                }
+
+                handler.postDelayed(this, 100);
+            }
+        });
+
+
+        for (Runnable runnable : runnables)
+            handler.postDelayed(runnable, 1000);
+    }
+
+    @Override
+    public void onStop() {
+        for (Runnable runnable : runnables)
+            handler.removeCallbacks(runnable);
+
+        super.onStop();
+    }
+
+    private ChartApplication getChartApplication() {
+        return (ChartApplication) getContext().getApplicationContext();
+    }
+
+    private class LineData {
+        private String name;
+        private LineGraphSeries<DataPoint> series;
+        private int count;
+
+        LineData(LineDescription desc) {
+            name = desc.name;
             series = new LineGraphSeries<>();
-            since = 0;
             count = 0;
 
-            graph.addSeries(series);
+            chart.addSeries(series);
+
+            series.setAnimated(true);
+            series.setDrawBackground(true);
+            series.setDrawAsPath(true);
+            series.setThickness(5);
+
+            int red = Color.red(desc.color);
+            int green = Color.green(desc.color);
+            int blue = Color.blue(desc.color);
+
+            int primary = Color.argb(255, red, green, blue);
+            int secondary = Color.argb(50, red, green, blue);
+
+            series.setColor(primary);
+            series.setBackgroundColor(secondary);
         }
 
-        void update(TcpClient client, int id) {
-            since = client.getData(since, 20, id, new Consumer<Integer>() {
-                @Override
-                public void accept(Integer v) {
-                    Log.d("TAG", "point: " + count + ":" + v);
+        void addValue(int value) {
+            DataPoint point = new DataPoint(count++, value);
 
-                    DataPoint point = new DataPoint(count++, v);
-
-                    series.appendData(point, true, 20);
-                }
-            });
-
-            Log.d("TAG", "update: " + since);
+            series.appendData(point, true, 100);
         }
     }
 }

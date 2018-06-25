@@ -1,5 +1,6 @@
 package putmotorsport.poznan.pl.telemetria.android;
 
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -13,7 +14,7 @@ class FragmentAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int i) {
         switch (i) {
             case 0:
-                return ChartFragment.newInstance(new int[] { 0x35 });
+                return ChartFragment.newInstance(makeKmhSpeedDesc());
 
             case 1:
                 return new ControlFragment();
@@ -26,5 +27,14 @@ class FragmentAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return 2;
+    }
+
+    private ChartDescription makeKmhSpeedDesc() {
+        return new ChartDescription(
+                "prędkość km/h",
+                0, 150,
+                new LineDescription(10, "lewe tył", Color.RED),
+                new LineDescription(11, "prawe tył", Color.YELLOW)
+        );
     }
 }
