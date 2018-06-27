@@ -175,7 +175,7 @@ class ChartAdapter extends FragmentStatePagerAdapter {
                 ),
                 new ChartDescription(
                         "Napięcie akumulatora",
-                        0, 15,
+                        0, 1500,
                         new LineDescription(
                                 120, "Napięcie [mV]", Color.RED
                         )
