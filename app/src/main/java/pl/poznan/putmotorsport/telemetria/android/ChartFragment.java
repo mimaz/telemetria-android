@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import putmotorsport.poznan.pl.telemetria.android.R;
 
 public class ChartFragment extends Fragment {
-    private static final int UPDATE_INTERVAL = 200;
+    private static final int UPDATE_INTERVAL = 50;
 
     private final Map<Integer, LineData> dataMap;
     private final Handler handler;
@@ -89,7 +89,7 @@ public class ChartFragment extends Fragment {
 
         chart.getViewport().setXAxisBoundsManual(true);
         chart.getViewport().setMinX(0);
-        chart.getViewport().setMaxX(40);
+        chart.getViewport().setMaxX(250);
 
         chart.getViewport().setYAxisBoundsManual(true);
         chart.getViewport().setMinY(desc.min);

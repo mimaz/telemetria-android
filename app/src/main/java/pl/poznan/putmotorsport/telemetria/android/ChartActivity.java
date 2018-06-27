@@ -44,7 +44,7 @@ public class ChartActivity extends AppCompatActivity {
             public void run() {
                 while (running) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(50);
                         client.fetch();
                     } catch (IOException e) {
                         Log.e("TAG", "fetching failed!!!");
