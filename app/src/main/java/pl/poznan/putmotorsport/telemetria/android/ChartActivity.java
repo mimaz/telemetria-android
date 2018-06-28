@@ -16,6 +16,21 @@ public class ChartActivity extends AppCompatActivity {
     private TcpClient client;
     private volatile boolean running;
 
+    private final TcpClient.IdGetter idsGetter = new TcpClient.IdGetter() {
+        @Override
+        public int[] getIds() {
+            int idx = pager.getCurrentItem();
+            ChartDescription cd = Charts.descriptions[idx];
+
+            int[] ids = new int[cd.lines.length];
+
+            for (int i = 0; i < cd.lines.length; i++)
+                ids[i] = cd.lines[i].id;
+
+            return ids;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,21 +45,7 @@ public class ChartActivity extends AppCompatActivity {
         String address = getResources().getString(R.string.address);
         int port = getResources().getInteger(R.integer.port);
 
-        client = new TcpClient(address, port,
-                new TcpClient.IdGetter() {
-            @Override
-            public int[] getIds() {
-                int idx = pager.getCurrentItem();
-                ChartDescription cd = Charts.descriptions[idx];
-
-                int[] ids = new int[cd.lines.length];
-
-                for (int i = 0; i < ids.length; i++)
-                    ids[i] = cd.lines[i].id;
-
-                return ids;
-            }
-        });
+        client = new TcpClient(this, address, port, idsGetter);
     }
 
     @Override

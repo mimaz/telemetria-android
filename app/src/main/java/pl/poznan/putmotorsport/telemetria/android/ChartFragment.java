@@ -68,6 +68,7 @@ public class ChartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         GraphView chart = view.findViewById(R.id.chart);
+        int chartWidth = getResources().getInteger(R.integer.chart_width);
 
         Bundle args = getArguments();
 
@@ -89,7 +90,7 @@ public class ChartFragment extends Fragment {
 
         chart.getViewport().setXAxisBoundsManual(true);
         chart.getViewport().setMinX(0);
-        chart.getViewport().setMaxX(200);
+        chart.getViewport().setMaxX(chartWidth);
 
         chart.getViewport().setYAxisBoundsManual(true);
         chart.getViewport().setMinY(desc.min);

@@ -1,5 +1,6 @@
 package pl.poznan.putmotorsport.telemetria.android;
 
+import android.content.Context;
 import android.util.Log;
 
 import java.io.DataInputStream;
@@ -8,12 +9,15 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 
+import putmotorsport.poznan.pl.telemetria.android.R;
+
 class TcpClient implements AbstractTcpClient {
     private static final int[] ids;
 
     private final Map<Integer, Data> dataMap;
     private final Random random;
     private final IdGetter getter;
+    private Context context;
     private String address;
     private int port;
 
@@ -21,7 +25,8 @@ class TcpClient implements AbstractTcpClient {
         int[] getIds();
     }
 
-    TcpClient(String address, int port, IdGetter getter) {
+    TcpClient(Context context, String address, int port, IdGetter getter) {
+        this.context = context;
         this.address = address;
         this.port = port;
         this.getter = getter;
@@ -37,7 +42,6 @@ class TcpClient implements AbstractTcpClient {
     public List<Integer> getNewData(int id) {
         if (id == 0)
             return Collections.singletonList(random.nextInt(50));
-
 
         Data data;
 
@@ -75,12 +79,14 @@ class TcpClient implements AbstractTcpClient {
 
         Socket socket = new Socket(address, port);
 
+        int maxCount = context.getResources().getInteger(R.integer.chart_width);
+
         try {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
             dos.writeInt(1); // get data command
-            dos.writeInt(100);
+            dos.writeInt(maxCount);
             dos.writeInt(map.size());
 
             for (Map.Entry<Integer, Data> entry : map.entrySet()) {
@@ -89,7 +95,6 @@ class TcpClient implements AbstractTcpClient {
             }
 
             for (Map.Entry<Integer, Data> entry : map.entrySet()) {
-                int id = entry.getKey();
                 Data data = entry.getValue();
 
                 int stat = dis.readInt();
@@ -110,7 +115,7 @@ class TcpClient implements AbstractTcpClient {
 
                     Log.d("TAG", "fetch: " + val);
 
-                    while (data.queue.size() > 1000)
+                    while (data.queue.size() > maxCount)
                         data.poll();
                 }
 
