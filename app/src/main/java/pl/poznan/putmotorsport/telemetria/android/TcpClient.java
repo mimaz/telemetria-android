@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.util.*;
 
 class TcpClient implements AbstractTcpClient {
+    private static final int[] ids;
+
     private final Map<Integer, Data> dataMap;
     private final Random random;
     private String address;
@@ -20,6 +22,9 @@ class TcpClient implements AbstractTcpClient {
 
         dataMap = new TreeMap<>();
         random = new Random();
+
+        for (int id : ids)
+            dataMap.put(id, new Data());
     }
 
     @Override
@@ -27,14 +32,15 @@ class TcpClient implements AbstractTcpClient {
         if (id == 0)
             return Collections.singletonList(random.nextInt(50));
 
+
         Data data;
 
-        synchronized (dataMap) {
-            if (!dataMap.containsKey(id))
-                return Collections.emptyList();
-
+        try {
             data = dataMap.get(id);
+        } catch (NoSuchElementException e) {
+            return Collections.emptyList();
         }
+
 
         List<Integer> list = new ArrayList<>();
 
@@ -44,12 +50,6 @@ class TcpClient implements AbstractTcpClient {
         }
 
         return list;
-    }
-
-    void addId(int id) {
-        synchronized (dataMap) {
-            dataMap.put(id, new Data());
-        }
     }
 
     void fetch() throws IOException {
@@ -117,5 +117,18 @@ class TcpClient implements AbstractTcpClient {
             queue = new ArrayDeque<>();
             since = 0;
         }
+    }
+
+    static {
+        List<Integer> list = new ArrayList<>();
+
+        for (ChartDescription cd : Charts.descriptions)
+            for (LineDescription ld : cd.lines)
+                list.add(ld.id);
+
+        ids = new int[list.size()];
+
+        for (int i = 0; i < ids.length; i++)
+            ids[i] = list.get(i);
     }
 }

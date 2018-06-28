@@ -19,8 +19,6 @@ public class ChartPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        super.onTouchEvent(ev);
-
-        return false;
+        return super.onTouchEvent(ev);
     }
 }

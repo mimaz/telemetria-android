@@ -28,9 +28,6 @@ public class ChartActivity extends AppCompatActivity {
         pager.setAdapter(adapter);
 
         client = new TcpClient("10.160.34.12", 8080);
-        client.addId(90);
-        client.addId(91);
-        client.addId(41);
     }
 
     @Override
