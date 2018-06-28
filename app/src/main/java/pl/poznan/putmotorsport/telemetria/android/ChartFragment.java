@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +20,6 @@ import java.util.TreeMap;
 import putmotorsport.poznan.pl.telemetria.android.R;
 
 public class ChartFragment extends Fragment {
-    private static final int UPDATE_INTERVAL = 100;
-
     private final Map<Integer, LineData> dataMap;
     private final Handler handler;
     private final Runnable updater;
@@ -50,7 +47,7 @@ public class ChartFragment extends Fragment {
                         dataMap.get(id).addValue(value);
                 }
 
-                handler.postDelayed(this, UPDATE_INTERVAL);
+                handler.postDelayed(this, Configuration.REFRESH_INTERVAL);
             }
         };
     }

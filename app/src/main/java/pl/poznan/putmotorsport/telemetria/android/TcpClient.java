@@ -18,7 +18,7 @@ class TcpClient implements AbstractTcpClient {
     private int port;
 
     public interface IdGetter {
-        int[] getId();
+        int[] getIds();
     }
 
     TcpClient(String address, int port, IdGetter getter) {
@@ -62,14 +62,18 @@ class TcpClient implements AbstractTcpClient {
     public void close() {}
 
     void fetch() throws IOException {
-        Socket socket = new Socket(address, port);
-
+        int[] ids = getter.getIds();
         Map<Integer, Data> map = new TreeMap<>();
 
         synchronized (dataMap) {
-            for (Map.Entry<Integer, Data> entry : dataMap.entrySet())
-                map.put(entry.getKey(), entry.getValue());
+            for (int id : ids) {
+                Data data = dataMap.get(id);
+
+                map.put(id, data);
+            }
         }
+
+        Socket socket = new Socket(address, port);
 
         try {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
