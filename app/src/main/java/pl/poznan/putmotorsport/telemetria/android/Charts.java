@@ -6,7 +6,7 @@ public class Charts {
     static final ChartDescription[] descriptions =
             new ChartDescription[] {
                     new ChartDescription(
-                            "Prędkość kół ]km/h[",
+                            "Prędkość kół [km/h]",
                             0, 150,
                             new LineDescription(
                                     90, "lewe tył", Color.RED
@@ -52,6 +52,7 @@ public class Charts {
                                     0, "wartość", Color.WHITE
                             )
                     ),
+                    /*
                     new ChartDescription(
                             "Ugięcie amortyzatorów [%]",
                             0, 100,
@@ -149,5 +150,6 @@ public class Charts {
                                     120, "Napięcie [mV]", Color.RED
                             )
                     )
+                    */
             };
 }
