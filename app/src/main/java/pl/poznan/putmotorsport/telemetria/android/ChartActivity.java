@@ -27,7 +27,7 @@ public class ChartActivity extends AppCompatActivity {
         pager = findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        client = new TcpClient("192.168.137.239", 8080);
+        client = new TcpClient("10.160.34.12", 8080);
         client.addId(90);
         client.addId(91);
         client.addId(41);
@@ -44,10 +44,10 @@ public class ChartActivity extends AppCompatActivity {
             public void run() {
                 while (running) {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
                         client.fetch();
                     } catch (IOException e) {
-                        Log.e("TAG", "fetching failed!!!");
+                        Log.e("TAG", "fetching failed: " + e);
                     } catch (InterruptedException e) {}
                 }
             }

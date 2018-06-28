@@ -81,7 +81,7 @@ class TcpClient implements AbstractTcpClient {
             int stat = dis.readInt();
 
             if (stat != 10)
-                throw new IOException("request failed!");
+                throw new IOException("request failed!: " + stat);
 
             data.since = dis.readInt();
 

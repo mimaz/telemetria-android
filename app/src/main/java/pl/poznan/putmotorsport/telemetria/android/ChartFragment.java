@@ -20,7 +20,7 @@ import java.util.TreeMap;
 import putmotorsport.poznan.pl.telemetria.android.R;
 
 public class ChartFragment extends Fragment {
-    private static final int UPDATE_INTERVAL = 200;
+    private static final int UPDATE_INTERVAL = 1000;
 
     private final Map<Integer, LineData> dataMap;
     private final Handler handler;
