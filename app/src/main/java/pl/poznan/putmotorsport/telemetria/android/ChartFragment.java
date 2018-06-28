@@ -47,7 +47,9 @@ public class ChartFragment extends Fragment {
                         dataMap.get(id).addValue(value);
                 }
 
-                handler.postDelayed(this, Configuration.REFRESH_INTERVAL);
+                int interval = getResources().getInteger(R.integer.refresh_interval);
+
+                handler.postDelayed(this, interval);
             }
         };
     }

@@ -27,7 +27,10 @@ public class ChartActivity extends AppCompatActivity {
         pager = findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        client = new TcpClient(Configuration.ADDRESS, Configuration.PORT,
+        String address = getResources().getString(R.string.address);
+        int port = getResources().getInteger(R.integer.port);
+
+        client = new TcpClient(address, port,
                 new TcpClient.IdGetter() {
             @Override
             public int[] getIds() {
@@ -55,7 +58,11 @@ public class ChartActivity extends AppCompatActivity {
             public void run() {
                 while (running) {
                     try {
-                        Thread.sleep(Configuration.REQUEST_INTERVAL);
+                        int delay = getResources()
+                                .getInteger(R.integer.request_interval);
+
+                        Thread.sleep(delay);
+
                         client.fetch();
                     } catch (IOException e) {
                         Log.e("TAG", "fetching failed: " + e);
