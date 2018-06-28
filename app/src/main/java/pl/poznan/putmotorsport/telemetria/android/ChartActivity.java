@@ -27,7 +27,20 @@ public class ChartActivity extends AppCompatActivity {
         pager = findViewById(R.id.pager);
         pager.setAdapter(adapter);
 
-        client = new TcpClient("192.168.43.85", 8080);
+        client = new TcpClient("192.168.43.216", 8080, new TcpClient.IdGetter() {
+            @Override
+            public int[] getId() {
+                int idx = pager.getCurrentItem();
+                ChartDescription cd = Charts.descriptions[idx];
+
+                int[] ids = new int[cd.lines.length];
+
+                for (int i = 0; i < ids.length; i++)
+                    ids[i] = cd.lines[i].id;
+
+                return ids;
+            }
+        });
     }
 
     @Override

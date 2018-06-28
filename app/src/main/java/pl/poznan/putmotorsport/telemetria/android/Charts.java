@@ -52,7 +52,6 @@ public class Charts {
                                     0, "wartość", Color.WHITE
                             )
                     ),
-                    /*
                     new ChartDescription(
                             "Ugięcie amortyzatorów [%]",
                             0, 100,
@@ -150,6 +149,5 @@ public class Charts {
                                     120, "Napięcie [mV]", Color.RED
                             )
                     )
-                    */
             };
 }

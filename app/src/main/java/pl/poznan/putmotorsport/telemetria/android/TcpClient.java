@@ -13,13 +13,18 @@ class TcpClient implements AbstractTcpClient {
 
     private final Map<Integer, Data> dataMap;
     private final Random random;
-    private Socket socket;
+    private final IdGetter getter;
     private String address;
     private int port;
 
-    TcpClient(String address, int port) {
+    public interface IdGetter {
+        int[] getId();
+    }
+
+    TcpClient(String address, int port, IdGetter getter) {
         this.address = address;
         this.port = port;
+        this.getter = getter;
 
         dataMap = new TreeMap<>();
         random = new Random();
@@ -54,36 +59,34 @@ class TcpClient implements AbstractTcpClient {
     }
 
     @Override
-    public void close() throws IOException {
-        socket.close();
-    }
+    public void close() {}
 
     void fetch() throws IOException {
         Socket socket = new Socket(address, port);
+
+        Map<Integer, Data> map = new TreeMap<>();
+
+        synchronized (dataMap) {
+            for (Map.Entry<Integer, Data> entry : dataMap.entrySet())
+                map.put(entry.getKey(), entry.getValue());
+        }
 
         try {
             DataInputStream dis = new DataInputStream(socket.getInputStream());
             DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
-            Set<Integer> ids = dataMap.keySet();
+            dos.writeInt(1); // get data command
+            dos.writeInt(100);
+            dos.writeInt(map.size());
 
-            Log.d("TAG", "id cnt: " + ids.size());
+            for (Map.Entry<Integer, Data> entry : map.entrySet()) {
+                dos.writeInt(entry.getKey());
+                dos.writeInt(entry.getValue().since);
+            }
 
-            for (int id : ids) {
-                Data data;
-
-                synchronized (dataMap) {
-                    try {
-                        data = dataMap.get(id);
-                    } catch (NoSuchElementException e) {
-                        continue;
-                    }
-                }
-
-                dos.writeInt(1); // get data command
-                dos.writeInt(data.since);
-                dos.writeInt(100);
-                dos.writeInt(id);
+            for (Map.Entry<Integer, Data> entry : map.entrySet()) {
+                int id = entry.getKey();
+                Data data = entry.getValue();
 
                 int stat = dis.readInt();
 
@@ -109,9 +112,9 @@ class TcpClient implements AbstractTcpClient {
 
                 for (int value : values)
                     data.push(value);
-            }
 
-            dos.writeInt(0);
+                dos.writeInt(0);
+            }
         } finally {
             socket.close();
         }
