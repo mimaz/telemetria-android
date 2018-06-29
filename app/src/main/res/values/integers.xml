@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="port">8080</integer>
-    <integer name="chart_width">200</integer>
-    <integer name="request_interval">200</integer>
-    <integer name="refresh_interval">200</integer>
+    <integer name="chart_width">100</integer>
+    <integer name="request_interval">50</integer>
+    <integer name="refresh_interval">25</integer>
 </resources>

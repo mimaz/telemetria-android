@@ -14,7 +14,6 @@ public class ChartActivity extends AppCompatActivity {
     private ViewPager pager;
     private Thread thread;
     private TcpClient client;
-    private volatile boolean running;
 
     private final TcpClient.IdGetter idsGetter = new TcpClient.IdGetter() {
         @Override
@@ -52,12 +51,10 @@ public class ChartActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        running = true;
-
-        thread = new Thread(new Runnable() {
+        thread = new Thread() {
             @Override
             public void run() {
-                while (running) {
+                while (!isInterrupted()) {
                     try {
                         int delay = getResources()
                                 .getInteger(R.integer.request_interval);
@@ -70,14 +67,15 @@ public class ChartActivity extends AppCompatActivity {
                     } catch (InterruptedException e) {}
                 }
             }
-        });
+        };
 
         thread.start();
     }
 
     @Override
     protected void onStop() {
-        running = false;
+        thread.interrupt();
+        client.close();
 
         super.onStop();
     }

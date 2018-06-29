@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.*;
 
@@ -19,6 +20,7 @@ class TcpClient implements AbstractTcpClient {
     private final IdGetter getter;
     private Context context;
     private String address;
+    private Socket socket;
     private int port;
 
     public interface IdGetter {
@@ -63,7 +65,11 @@ class TcpClient implements AbstractTcpClient {
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        try {
+            socket.close();
+        } catch (NullPointerException | IOException e) {}
+    }
 
     void fetch() throws IOException {
         int[] ids = getter.getIds();
@@ -77,55 +83,53 @@ class TcpClient implements AbstractTcpClient {
             }
         }
 
-        Socket socket = new Socket(address, port);
+
+        if (socket == null || socket.isClosed()) {
+            Log.d("TAG", "opening new socket");
+            socket = new Socket(address, port);
+        }
+
 
         int maxCount = context.getResources().getInteger(R.integer.chart_width);
 
-        try {
-            DataInputStream dis = new DataInputStream(socket.getInputStream());
-            DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
-            dos.writeInt(1); // get data command
-            dos.writeInt(maxCount);
-            dos.writeInt(map.size());
+        DataInputStream dis = new DataInputStream(socket.getInputStream());
+        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
 
-            for (Map.Entry<Integer, Data> entry : map.entrySet()) {
-                dos.writeInt(entry.getKey());
-                dos.writeInt(entry.getValue().since);
+        dos.writeInt(1); // get data command
+        dos.writeInt(maxCount);
+        dos.writeInt(map.size());
+
+        for (Map.Entry<Integer, Data> entry : map.entrySet()) {
+            dos.writeInt(entry.getKey());
+            dos.writeInt(entry.getValue().since);
+        }
+
+        for (Map.Entry<Integer, Data> entry : map.entrySet()) {
+            Data data = entry.getValue();
+
+            int stat = dis.readInt();
+
+            if (stat != 10)
+                throw new IOException("request failed!: " + stat);
+
+            data.since = dis.readInt();
+
+            int count = dis.readInt();
+            int values[] = new int[count];
+
+            for (int i = 0; i < count; i++) {
+                int val = dis.readShort();
+
+                values[i] = val;
+
+
+                while (data.queue.size() > maxCount)
+                    data.poll();
             }
 
-            for (Map.Entry<Integer, Data> entry : map.entrySet()) {
-                Data data = entry.getValue();
-
-                int stat = dis.readInt();
-
-                if (stat != 10)
-                    throw new IOException("request failed!: " + stat);
-
-                data.since = dis.readInt();
-
-                int count = dis.readInt();
-                int values[] = new int[count];
-
-                for (int i = 0; i < count; i++) {
-                    int val = dis.readShort();
-
-                    values[i] = val;
-
-
-                    Log.d("TAG", "fetch: " + val);
-
-                    while (data.queue.size() > maxCount)
-                        data.poll();
-                }
-
-                for (int value : values)
-                    data.push(value);
-
-                dos.writeInt(0);
-            }
-        } finally {
-            socket.close();
+            for (int value : values)
+                data.push(value);
         }
     }
 
